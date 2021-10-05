@@ -32,19 +32,7 @@ public class RedisMessageListener extends RedisPubSubAdapter<String, String> {
 
     @SuppressWarnings("all")
     private RedisMessageListener() {
-        if (AttributeKey.exists("RedisURI")) {
-            try {
-                Field poolField = AttributeKey.class.getDeclaredField("pool");
-                poolField.setAccessible(true);
-                ConstantPool<AttributeKey<Object>> pool = (ConstantPool<AttributeKey<Object>>) poolField.get(null);
-                Field constantsField = ConstantPool.class.getDeclaredField("constants");
-                constantsField.setAccessible(true);
-                ConcurrentMap<String, Object> constants = (ConcurrentMap<String, Object>) constantsField.get(pool);
-                constants.remove("RedisURI");
-            } catch (NoSuchFieldException | IllegalAccessException e) {
-                e.printStackTrace();
-            }
-        }
+
 
         pubSubConnection = RedisUtils.getRedisClient().connectPubSub();
         pubSubConnection.addListener(this);

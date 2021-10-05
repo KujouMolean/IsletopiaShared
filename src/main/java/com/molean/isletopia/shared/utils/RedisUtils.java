@@ -6,7 +6,11 @@ import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.api.sync.RedisCommands;
 import io.lettuce.core.codec.ByteArrayCodec;
 import io.lettuce.core.dynamic.annotation.CommandNaming;
+import io.netty.util.AttributeKey;
 import io.netty.util.ConstantPool;
+
+import java.lang.reflect.Field;
+import java.util.concurrent.ConcurrentMap;
 
 public class RedisUtils {
 
@@ -17,11 +21,8 @@ public class RedisUtils {
     private static RedisCommands<byte[], byte[]> redisCommand2;
 
     public static RedisCommands<String, String> getCommand() {
-        if (redisClient == null) {
-            redisClient = RedisClient.create("redis://localhost");
-        }
         if (connection1 == null) {
-            connection1 = redisClient.connect();
+            connection1 = getRedisClient().connect();
         }
         if (redisCommand1 == null) {
             redisCommand1 = connection1.sync();
@@ -30,11 +31,8 @@ public class RedisUtils {
     }
 
     public static RedisCommands<byte[], byte[]> getByteCommand() {
-        if (redisClient == null) {
-            redisClient = RedisClient.create("redis://localhost");
-        }
         if (connection2 == null) {
-            connection2 = redisClient.connect(ByteArrayCodec.INSTANCE);
+            connection2 = getRedisClient().connect(ByteArrayCodec.INSTANCE);
         }
         if (redisCommand2 == null) {
             redisCommand2 = connection2.sync();
@@ -43,6 +41,20 @@ public class RedisUtils {
     }
 
     public static RedisClient getRedisClient() {
+        if (AttributeKey.exists("RedisURI")) {
+            try {
+                Field poolField = AttributeKey.class.getDeclaredField("pool");
+                poolField.setAccessible(true);
+                ConstantPool<AttributeKey<Object>> pool = (ConstantPool<AttributeKey<Object>>) poolField.get(null);
+                Field constantsField = ConstantPool.class.getDeclaredField("constants");
+                constantsField.setAccessible(true);
+                ConcurrentMap<String, Object> constants = (ConcurrentMap<String, Object>) constantsField.get(pool);
+                constants.remove("RedisURI");
+            } catch (NoSuchFieldException | IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
+
         if (redisClient == null) {
             redisClient = RedisClient.create("redis://localhost");
         }
