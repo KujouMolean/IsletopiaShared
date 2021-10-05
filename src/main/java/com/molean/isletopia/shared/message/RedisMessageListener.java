@@ -2,57 +2,66 @@ package com.molean.isletopia.shared.message;
 
 import com.google.gson.Gson;
 import com.molean.isletopia.shared.MessageHandler;
-import com.molean.isletopia.shared.pojo.WrappedMessageObject;
 import com.molean.isletopia.shared.platform.PlatformRelatedUtils;
+import com.molean.isletopia.shared.pojo.WrappedMessageObject;
 import com.molean.isletopia.shared.utils.RedisUtils;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPubSub;
+import io.lettuce.core.ConnectionBuilder;
+import io.lettuce.core.pubsub.RedisPubSubAdapter;
+import io.lettuce.core.pubsub.StatefulRedisPubSubConnection;
+import io.lettuce.core.pubsub.api.sync.RedisPubSubCommands;
+import io.netty.util.AttributeKey;
+import io.netty.util.ConstantPool;
+import sun.misc.Unsafe;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Logger;
 
-public class RedisMessageListener extends JedisPubSub {
+public class RedisMessageListener extends RedisPubSubAdapter<String, String> {
     private static final Map<String, MessageHandler<?>> handlersMap = new HashMap<>();
     private static final Map<String, Type> messageTypeMap = new HashMap<>();
     private final String server = PlatformRelatedUtils.getServerName();
-
+    private static StatefulRedisPubSubConnection<String, String> pubSubConnection;
     private static RedisMessageListener redisMessageListener;
-    private static boolean shouldStop = false;
+
 
     @SuppressWarnings("all")
     private RedisMessageListener() {
-        PlatformRelatedUtils.getInstance().runAsync(() -> {
-            while (true) {
-                Jedis jedis = RedisUtils.getJedis();
-                jedis.subscribe(this, "ServerMessage");
-                jedis.close();
-                if(shouldStop){
-                    break;
-                }
+        if (AttributeKey.exists("RedisURI")) {
+            try {
+                Field poolField = AttributeKey.class.getDeclaredField("pool");
+                poolField.setAccessible(true);
+                ConstantPool<AttributeKey<Object>> pool = (ConstantPool<AttributeKey<Object>>) poolField.get(null);
+                Field constantsField = ConstantPool.class.getDeclaredField("constants");
+                constantsField.setAccessible(true);
+                ConcurrentMap<String, Object> constants = (ConcurrentMap<String, Object>) constantsField.get(pool);
+                constants.remove("RedisURI");
+            } catch (NoSuchFieldException | IllegalAccessException e) {
+                e.printStackTrace();
             }
+        }
 
-        });
+        pubSubConnection = RedisUtils.getRedisClient().connectPubSub();
+        pubSubConnection.addListener(this);
+        RedisPubSubCommands<String, String> sync = pubSubConnection.sync();
+        sync.subscribe("ServerMessage");
+
     }
 
-    public static void init(){
-        try {
-            shouldStop = false;
+    public static void init() {
+        if (redisMessageListener == null) {
             redisMessageListener = new RedisMessageListener();
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 
-    public static void destroy(){
-        try {
-            shouldStop = true;
-            redisMessageListener.unsubscribe();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public static void destroy() {
+        pubSubConnection.close();
+
     }
 
     public static <T> void setHandler(String type, MessageHandler<T> messageHandler, Class<?> messageClass) {
@@ -60,8 +69,9 @@ public class RedisMessageListener extends JedisPubSub {
         messageTypeMap.put(type.toLowerCase(Locale.ROOT), messageClass);
     }
 
+
     @Override
-    public void onMessage(String channel, String message) {
+    public void message(String channel, String message) {
         WrappedMessageObject wrappedMessageObject = new Gson().fromJson(message, WrappedMessageObject.class);
         if (!wrappedMessageObject.getTo().equalsIgnoreCase(server)) {
             return;
