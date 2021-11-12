@@ -33,16 +33,6 @@ public class ServerMessageUtils {
     }
 
 
-    public static void universalChat(String player, String message) {
-        ChatObject chatObject = new ChatObject(player, message);
-        sendMessage("waterfall", "Chat", chatObject);
-    }
-
-    public static void updateIgnores(String player, List<String> ignores) {
-        IgnoreObject ignoreObject = new IgnoreObject(player, ignores);
-        sendMessage("waterfall", "Ignore", ignoreObject);
-    }
-
     public static void sendServerBungeeMessage(String target, String channel, Object object) {
         if (!channel.equalsIgnoreCase("PlayerInfo")) {
             Logger.getLogger("").info("发送 Bukkit 消息: " + object);

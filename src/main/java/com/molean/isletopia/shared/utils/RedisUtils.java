@@ -40,6 +40,7 @@ public class RedisUtils {
         return redisCommand2;
     }
 
+    @SuppressWarnings("all")
     public static RedisClient getRedisClient() {
         if (AttributeKey.exists("RedisURI")) {
             try {
