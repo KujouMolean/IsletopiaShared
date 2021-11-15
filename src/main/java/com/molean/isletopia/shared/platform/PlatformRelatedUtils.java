@@ -23,8 +23,10 @@ public abstract class PlatformRelatedUtils {
         if(instance==null){
             if(getServerName().equalsIgnoreCase("waterfall")){
                 instance= new BungeeRelatedUtils();
-            }else{
-                instance= new BukkitRelatedUtils();
+            } else if(getServerName().equalsIgnoreCase("velocity")) {
+                instance = new VelocityRelatedUtils();
+            } else {
+                instance = new BukkitRelatedUtils();
             }
         }
         return instance;

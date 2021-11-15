@@ -1,7 +1,6 @@
 package com.molean.isletopia.shared.utils;
 
-import io.lettuce.core.RedisClient;
-import io.lettuce.core.RedisURI;
+import io.lettuce.core.*;
 import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.api.sync.RedisCommands;
 import io.lettuce.core.codec.ByteArrayCodec;
@@ -10,6 +9,7 @@ import io.netty.util.AttributeKey;
 import io.netty.util.ConstantPool;
 
 import java.lang.reflect.Field;
+import java.time.Duration;
 import java.util.concurrent.ConcurrentMap;
 
 public class RedisUtils {
@@ -23,9 +23,12 @@ public class RedisUtils {
     public static RedisCommands<String, String> getCommand() {
         if (connection1 == null) {
             connection1 = getRedisClient().connect();
+            connection1.setTimeout(Duration.ofSeconds(3));
+
         }
         if (redisCommand1 == null) {
             redisCommand1 = connection1.sync();
+            redisCommand1.setTimeout(Duration.ofSeconds(3));
         }
         return redisCommand1;
     }
@@ -33,9 +36,11 @@ public class RedisUtils {
     public static RedisCommands<byte[], byte[]> getByteCommand() {
         if (connection2 == null) {
             connection2 = getRedisClient().connect(ByteArrayCodec.INSTANCE);
+            connection2.setTimeout(Duration.ofSeconds(3));
         }
         if (redisCommand2 == null) {
             redisCommand2 = connection2.sync();
+            redisCommand2.setTimeout(Duration.ofSeconds(3));
         }
         return redisCommand2;
     }
@@ -58,6 +63,7 @@ public class RedisUtils {
 
         if (redisClient == null) {
             redisClient = RedisClient.create("redis://localhost");
+            redisClient.setDefaultTimeout(Duration.ofSeconds(3));
         }
         return redisClient;
     }
