@@ -3,12 +3,9 @@ package com.molean.isletopia.shared.message;
 import com.google.gson.Gson;
 import com.molean.isletopia.shared.platform.PlatformRelatedUtils;
 import com.molean.isletopia.shared.pojo.WrappedMessageObject;
-import com.molean.isletopia.shared.pojo.obj.ChatObject;
-import com.molean.isletopia.shared.pojo.obj.IgnoreObject;
 import com.molean.isletopia.shared.pojo.req.SwitchServerRequest;
 import com.molean.isletopia.shared.utils.RedisUtils;
 
-import java.util.List;
 import java.util.logging.Logger;
 
 public class ServerMessageUtils {
@@ -19,11 +16,12 @@ public class ServerMessageUtils {
         WrappedMessageObject wrappedMessageObject = new WrappedMessageObject();
         wrappedMessageObject.setMessage(new Gson().toJson(object));
         wrappedMessageObject.setFrom(PlatformRelatedUtils.getServerName());
-
         wrappedMessageObject.setTo(target);
         wrappedMessageObject.setSubChannel(channel);
         wrappedMessageObject.setTime(System.currentTimeMillis());
-        RedisUtils.getCommand().publish("ServerMessage", new Gson().toJson(wrappedMessageObject));
+        PlatformRelatedUtils.getInstance().runAsync(() -> {
+            RedisUtils.getCommand().publish("ServerMessage", new Gson().toJson(wrappedMessageObject));
+        });
 
     }
 
@@ -43,7 +41,9 @@ public class ServerMessageUtils {
         wrappedMessageObject.setTo(target);
         wrappedMessageObject.setSubChannel(channel);
         wrappedMessageObject.setTime(System.currentTimeMillis());
-        RedisUtils.getCommand().publish("ServerMessage", new Gson().toJson(wrappedMessageObject));
+        PlatformRelatedUtils.getInstance().runAsync(() -> {
+            RedisUtils.getCommand().publish("ServerMessage", new Gson().toJson(wrappedMessageObject));
+        });
     }
 
     public static void broadcastBungeeMessage(String channel, Object object) {

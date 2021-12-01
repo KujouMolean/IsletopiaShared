@@ -1,5 +1,6 @@
 package com.molean.isletopia.shared.utils;
 
+import com.molean.isletopia.shared.platform.PlatformRelatedUtils;
 import io.lettuce.core.*;
 import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.api.sync.RedisCommands;
@@ -11,6 +12,7 @@ import io.netty.util.ConstantPool;
 import java.lang.reflect.Field;
 import java.time.Duration;
 import java.util.concurrent.ConcurrentMap;
+import java.util.function.Consumer;
 
 public class RedisUtils {
 
@@ -24,7 +26,6 @@ public class RedisUtils {
         if (connection1 == null) {
             connection1 = getRedisClient().connect();
             connection1.setTimeout(Duration.ofSeconds(3));
-
         }
         if (redisCommand1 == null) {
             redisCommand1 = connection1.sync();
@@ -66,6 +67,17 @@ public class RedisUtils {
             redisClient.setDefaultTimeout(Duration.ofSeconds(3));
         }
         return redisClient;
+    }
+
+    public static void asyncSet(String key, String value) {
+        PlatformRelatedUtils.getInstance().runAsync(() -> {
+            getCommand().set(key, value);
+        });
+    }
+    public static void asyncGet(String key, Consumer<String> consumer) {
+        PlatformRelatedUtils.getInstance().runAsync(() -> {
+            consumer.accept(getCommand().get(key));
+        });
     }
 
     public static void destroy() {

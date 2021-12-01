@@ -45,6 +45,7 @@
                                     <include>io.lettuce:lettuce-core</include>
                                     <include>io.projectreactor:reactor-core</include>
                                     <include>org.reactivestreams:reactive-streams</include>
+                                    <include>org.xerial:sqlite-jdbc</include>
                                 </includes>
                             </artifactSet>
                             <minimizeJar>false</minimizeJar>
@@ -107,7 +108,7 @@
         <dependency>
             <groupId>io.papermc.paper</groupId>
             <artifactId>paper-api</artifactId>
-            <version>1.17.1-R0.1-SNAPSHOT</version>
+            <version>1.18-rc3-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

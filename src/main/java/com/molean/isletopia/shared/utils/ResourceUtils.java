@@ -15,4 +15,9 @@ public class ResourceUtils {
         }
         return s;
     }
+
+    public static InputStream getResourceAsInputStream(String path) {
+        return ResourceUtils.class.getClassLoader().getResourceAsStream(path);
+    }
+
 }

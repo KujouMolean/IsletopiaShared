@@ -20,7 +20,6 @@
 /Users/molean/IdeaProjects/IsletopiaShared/src/main/java/com/molean/isletopia/shared/database/ParameterDao.java
 /Users/molean/IdeaProjects/IsletopiaShared/src/main/java/com/molean/isletopia/shared/message/ServerMessageUtils.java
 /Users/molean/IdeaProjects/IsletopiaShared/src/main/java/com/molean/isletopia/shared/utils/UUIDUtils.java
-/Users/molean/IdeaProjects/IsletopiaShared/src/main/java/com/molean/isletopia/shared/pojo/req/ElytraRequestObject.java
 /Users/molean/IdeaProjects/IsletopiaShared/src/main/java/com/molean/isletopia/shared/database/PlayerBackupDao.java
 /Users/molean/IdeaProjects/IsletopiaShared/src/main/java/com/molean/isletopia/shared/model/Island.java
 /Users/molean/IdeaProjects/IsletopiaShared/src/main/java/com/molean/isletopia/shared/pojo/req/GiveItemRequestObject.java
@@ -31,14 +30,13 @@
 /Users/molean/IdeaProjects/IsletopiaShared/src/main/java/com/molean/isletopia/shared/database/IslandDao.java
 /Users/molean/IdeaProjects/IsletopiaShared/src/main/java/com/molean/isletopia/shared/message/RedisMessageListener.java
 /Users/molean/IdeaProjects/IsletopiaShared/src/main/java/com/molean/isletopia/shared/utils/RedisUtils.java
-/Users/molean/IdeaProjects/IsletopiaShared/src/main/java/com/molean/isletopia/shared/pojo/req/PasswdRequest.java
 /Users/molean/IdeaProjects/IsletopiaShared/src/main/java/com/molean/isletopia/shared/service/AccountService.java
-/Users/molean/IdeaProjects/IsletopiaShared/src/main/java/com/molean/isletopia/shared/pojo/req/BeaconRequestObject.java
 /Users/molean/IdeaProjects/IsletopiaShared/src/main/java/com/molean/isletopia/shared/pojo/obj/VisitNotificationObject.java
 /Users/molean/IdeaProjects/IsletopiaShared/src/main/java/com/molean/isletopia/shared/model/BumpInfo.java
 /Users/molean/IdeaProjects/IsletopiaShared/src/main/java/com/molean/isletopia/shared/MessageHandler.java
 /Users/molean/IdeaProjects/IsletopiaShared/src/main/java/com/molean/isletopia/shared/pojo/resp/VisitResponse.java
 /Users/molean/IdeaProjects/IsletopiaShared/src/main/java/com/molean/isletopia/shared/database/UUIDDao.java
+/Users/molean/IdeaProjects/IsletopiaShared/src/main/java/com/molean/isletopia/shared/platform/VelocityRelatedUtils.java
 /Users/molean/IdeaProjects/IsletopiaShared/src/main/java/com/molean/isletopia/shared/pojo/req/TellMessageRequest.java
 /Users/molean/IdeaProjects/IsletopiaShared/src/main/java/com/molean/isletopia/shared/database/PlayerDataDao.java
 /Users/molean/IdeaProjects/IsletopiaShared/src/main/java/com/molean/isletopia/shared/pojo/req/CommandExecuteRequest.java

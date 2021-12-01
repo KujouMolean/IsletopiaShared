@@ -35,7 +35,7 @@ public class BungeeRelatedUtils extends PlatformRelatedUtils {
     @Override
     public List<String> getIslandServers() {
         ArrayList<String> stringArrayList = new ArrayList<>();
-        for (String s : ProxyServer.getInstance().getServersCopy().keySet()) {
+        for (String s : ProxyServer.getInstance().getServers().keySet()) {
             if (s.startsWith("server")) {
                 stringArrayList.add(s);
             }
@@ -45,7 +45,7 @@ public class BungeeRelatedUtils extends PlatformRelatedUtils {
 
     @Override
     public List<String> getAllServers() {
-        return new ArrayList<>(ProxyServer.getInstance().getServersCopy().keySet());
+        return new ArrayList<>(ProxyServer.getInstance().getServers().keySet());
     }
 
 }

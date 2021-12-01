@@ -47,7 +47,7 @@ public class UniversalParameter {
     }
 
 
-    public static void removeParameter(UUID uuid, String name, String key, String value) {
+    public static void removeParameter(UUID uuid, String key, String value) {
         String before = ParameterDao.get(uuid, key);
         if (before == null || before.trim().equals("")) {
             ParameterDao.set(uuid, key, value);

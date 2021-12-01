@@ -129,6 +129,23 @@ public class PlayerDataDao {
             }
         }
     }
+    public static byte[] query(UUID owner) throws SQLException, IOException {
+        try (Connection connection = DataSourceUtils.getConnection()) {
+            String sql = """
+                    select data
+                    from minecraft.playerdata
+                    where uuid = ?;
+                    """;
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, owner.toString());
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                Blob blob = resultSet.getBlob(1);
+                return blob.getBinaryStream().readAllBytes();
+            }
+        }
+        throw new RuntimeException("Player data not exist, check exist before query!");
+    }
 
     public static byte[] query(UUID owner, String passwd) throws SQLException, IOException {
         try (Connection connection = DataSourceUtils.getConnection()) {
