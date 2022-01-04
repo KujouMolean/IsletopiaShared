@@ -1,15 +1,17 @@
 package com.molean.isletopia.shared.pojo.resp;
 
+import java.util.UUID;
+
 public class VisitResponse {
-    private String target;
+    private UUID target;
     private String response;
     private String responseMessage;
 
-    public String getTarget() {
+    public UUID getTarget() {
         return target;
     }
 
-    public void setTarget(String target) {
+    public void setTarget(UUID target) {
         this.target = target;
     }
 

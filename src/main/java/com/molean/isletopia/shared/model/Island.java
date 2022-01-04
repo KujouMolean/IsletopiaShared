@@ -27,6 +27,9 @@ public class Island {
     protected Timestamp creation;
     protected HashSet<UUID> members;
     protected Set<String> islandFlags;
+    @NotNull
+    protected String icon;
+
 
     public Island(Island island) {
         this.id = island.id;
@@ -44,9 +47,10 @@ public class Island {
         this.creation = island.creation;
         this.members = new HashSet<>(island.members);
         this.islandFlags = new HashSet<>(island.islandFlags);
+        this.icon = island.icon;
     }
 
-    public Island(int id, int x, int z, double spawnX, double spawnY, double spawnZ, float yaw, float pitch, @NotNull String server, @NotNull UUID uuid, @Nullable String name, @Nullable String biome, @NotNull Timestamp creation, Set<UUID> members, Set<String> islandFlags) {
+    public Island(int id, int x, int z, double spawnX, double spawnY, double spawnZ, float yaw, float pitch, @NotNull String server, @NotNull UUID uuid, @Nullable String name, @Nullable String biome, @NotNull Timestamp creation, Set<UUID> members, Set<String> islandFlags, String icon) {
         this.id = id;
         this.x = x;
         this.z = z;
@@ -62,6 +66,7 @@ public class Island {
         this.creation = creation;
         this.members = new HashSet<>(members);
         this.islandFlags = new HashSet<>(islandFlags);
+        this.icon = icon;
     }
 
     public int getId() {
@@ -166,6 +171,10 @@ public class Island {
                 ", z=" + z +
                 ", server='" + server + '\'' +
                 '}';
+    }
+
+    public @NotNull String getIcon() {
+        return icon;
     }
 
 

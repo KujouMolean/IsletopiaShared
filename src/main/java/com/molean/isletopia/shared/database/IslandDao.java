@@ -30,6 +30,7 @@ public class IslandDao {
                            name     text         null,
                            biome    varchar(100) not null default 'PLAINS',
                            creation timestamp    not null default CURRENT_TIMESTAMP,
+                           icon     varchar(100) not null default 'GRASS_BLOCK',
                            constraint  island_pk   unique (server, x, z)
                        );
                     """;
@@ -168,8 +169,8 @@ public class IslandDao {
     public static void createIsland(Island island) throws SQLException {
         try (Connection connection = DataSourceUtils.getConnection()) {
             String sql = """
-                    insert into minecraft.island(x, z, spawnX, spawnY, spawnZ,yaw,pitch, server,uuid, biome, creation)
-                                           values (?, ?, ?, ?, ?, ?,?,?, ?,?, ?)
+                    insert into minecraft.island(x, z, spawnX, spawnY, spawnZ,yaw,pitch, server,uuid, biome, creation,icon)
+                                           values (?, ?, ?, ?, ?, ?,?,?, ?,?, ?,?)
                     """;
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setInt(1, island.getX());
@@ -184,6 +185,7 @@ public class IslandDao {
             preparedStatement.setString(9, island.getUuid().toString());
             preparedStatement.setString(10, island.getBiome());
             preparedStatement.setTimestamp(11, island.getCreation());
+            preparedStatement.setString(12, island.getIcon());
             preparedStatement.execute();
             Set<UUID> members = island.getMembers();
             Set<String> islandFlags = island.getIslandFlags();
@@ -215,7 +217,8 @@ public class IslandDao {
                         uuid=?,
                         biome=?,
                         name=?,
-                        creation=?
+                        creation=?,
+                        icon=?
                     where id = ?;
                     """;
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
@@ -228,7 +231,8 @@ public class IslandDao {
             preparedStatement.setString(7, island.getBiome());
             preparedStatement.setString(8, island.getName());
             preparedStatement.setTimestamp(9, island.getCreation());
-            preparedStatement.setInt(10, island.getId());
+            preparedStatement.setString(10, island.getIcon());
+            preparedStatement.setInt(11, island.getId());
             preparedStatement.execute();
         }
 
@@ -319,10 +323,11 @@ public class IslandDao {
             String name = resultSet.getString("name");
             String biome = resultSet.getString("biome");
             Timestamp creation = resultSet.getTimestamp("creation");
+            String icon = resultSet.getString("icon");
             Set<UUID> islandMember = getIslandMember(id);
             Set<String> islandFlag = getIslandFlag(id);
             assert uuid != null;
-            Island island = new Island(id, x, z, spawnX, spawnY, spawnZ, yaw, pitch, server, uuid, name, biome, creation, islandMember, islandFlag);
+            Island island = new Island(id, x, z, spawnX, spawnY, spawnZ, yaw, pitch, server, uuid, name, biome, creation, islandMember, islandFlag, icon);
             islands.add(island);
         }
         return islands;
@@ -354,6 +359,21 @@ public class IslandDao {
             preparedStatement.setInt(1, islandId.getX());
             preparedStatement.setInt(2, islandId.getZ());
             preparedStatement.setString(3, islandId.getServer());
+            ResultSet resultSet = preparedStatement.executeQuery();
+            HashSet<Island> islands = parseIsland(resultSet);
+            if (!islands.isEmpty()) {
+                return new ArrayList<>(islands).get(0);
+            }
+        }
+        return null;
+    }
+
+    @Nullable
+    public static Island getIslandById(int id) throws SQLException {
+        try (Connection connection = DataSourceUtils.getConnection()) {
+            String sql = "select * from minecraft.island where id=?";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setInt(1, id);
             ResultSet resultSet = preparedStatement.executeQuery();
             HashSet<Island> islands = parseIsland(resultSet);
             if (!islands.isEmpty()) {
@@ -398,7 +418,7 @@ public class IslandDao {
         return islandIds;
     }
 
-    public static List<IslandId> getPlayerLocalServerIslands(String server,UUID owner) throws SQLException {
+    public static List<IslandId> getPlayerLocalServerIslands(String server, UUID owner) throws SQLException {
         List<IslandId> islandIds = new ArrayList<>();
         try (Connection connection = DataSourceUtils.getConnection()) {
             String sql = "select server,x,z from minecraft.island where uuid = ? and server=? order by id";
@@ -418,11 +438,11 @@ public class IslandDao {
     }
 
 
-    public static IslandId getPlayerLocalServerFirstIsland(String server,UUID owner) throws SQLException {
+    public static IslandId getPlayerLocalServerFirstIsland(String server, UUID owner) throws SQLException {
         try (Connection connection = DataSourceUtils.getConnection()) {
             String sql = "select server,x,z from minecraft.island where server = ? and uuid = ? order by id";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setString(1,  server);
+            preparedStatement.setString(1, server);
             preparedStatement.setString(2, owner.toString());
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {

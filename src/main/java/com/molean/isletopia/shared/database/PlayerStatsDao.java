@@ -1,6 +1,5 @@
 package com.molean.isletopia.shared.database;
 
-import com.molean.isletopia.shared.database.DataSourceUtils;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
@@ -8,7 +7,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.UUID;
+import java.util.*;
 
 public class PlayerStatsDao {
     public static void checkTable() throws SQLException {
@@ -125,6 +124,40 @@ public class PlayerStatsDao {
                 return null;
             }
         }
+    }
+
+    public static Map<UUID, String> queryAll() throws SQLException {
+        Map<UUID,String> map = new HashMap<>();
+        try (Connection connection = DataSourceUtils.getConnection()) {
+            String sql = """
+                    select uuid,stats
+                    from minecraft.player_stats
+                    """;
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                UUID uuid = UUID.fromString(resultSet.getString(1));
+                String stats = resultSet.getString(2);
+                map.put(uuid, stats);
+            }
+        }
+        return map;
+    }
+    public static String queryForce(UUID owner) throws SQLException {
+        try (Connection connection = DataSourceUtils.getConnection()) {
+            String sql = """
+                    select stats
+                    from minecraft.player_stats
+                    where uuid = ?;
+                    """;
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, owner.toString());
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                return resultSet.getString(1);
+            }
+        }
+        throw new RuntimeException("Player stats not exist, check exist before query!");
     }
 
     public static String query(UUID owner, String passwd) throws SQLException, IOException {

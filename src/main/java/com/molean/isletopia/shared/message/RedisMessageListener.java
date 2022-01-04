@@ -32,13 +32,10 @@ public class RedisMessageListener extends RedisPubSubAdapter<String, String> {
 
     @SuppressWarnings("all")
     private RedisMessageListener() {
-
-
         pubSubConnection = RedisUtils.getRedisClient().connectPubSub();
         pubSubConnection.addListener(this);
         RedisPubSubCommands<String, String> sync = pubSubConnection.sync();
         sync.subscribe("ServerMessage");
-
     }
 
     public static void init() {
