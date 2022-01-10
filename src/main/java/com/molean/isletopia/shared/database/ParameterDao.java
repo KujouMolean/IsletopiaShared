@@ -4,9 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class ParameterDao {
 
@@ -78,6 +76,27 @@ public class ParameterDao {
             return null;
         }
         return keyList;
+    }
+
+    public static Map<String, String> properties(UUID uuid) {
+        HashMap<String, String> map = new HashMap<>();
+        try (Connection connection = DataSourceUtils.getConnection()) {
+            String sql = "select p_key,p_value from minecraft.isletopia_parameters where uuid=?";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, uuid.toString());
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                String key = resultSet.getString(1);
+                String value = resultSet.getString(2);
+                if (key != null && value != null) {
+                    map.put(key, value);
+                }
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            return null;
+        }
+        return map;
     }
 
     public static void set(UUID uuid, String key, String value) {
