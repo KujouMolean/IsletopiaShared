@@ -2,6 +2,9 @@ package com.molean.isletopia.shared.platform;
 
 import java.io.File;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 public abstract class PlatformRelatedUtils {
     public abstract void runAsync(Runnable runnable);
@@ -13,9 +16,14 @@ public abstract class PlatformRelatedUtils {
     }
 
 
-    public abstract List<String> getIslandServers();
+    public abstract Set<String> getIslandServers();
 
-    public abstract List<String> getAllServers();
+    public abstract Set<String> getAllServers();
+
+    public abstract Map<UUID, String> getOnlinePlayers();
+
+    public abstract Map<UUID, String> getPlayerServerMap();
+
 
     private static PlatformRelatedUtils instance;
 

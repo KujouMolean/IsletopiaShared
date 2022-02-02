@@ -1,14 +1,12 @@
 package com.molean.isletopia.shared.platform;
 
 import com.velocitypowered.api.plugin.PluginContainer;
+import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class VelocityRelatedUtils extends PlatformRelatedUtils {
     private static ProxyServer proxyServer;
@@ -55,9 +53,9 @@ public class VelocityRelatedUtils extends PlatformRelatedUtils {
     }
 
     @Override
-    public List<String> getIslandServers() {
+    public Set<String> getIslandServers() {
         Collection<RegisteredServer> allServers = proxyServer.getAllServers();
-        List<String> serverList = new ArrayList<>();
+        Set<String> serverList = new HashSet<>();
         for (RegisteredServer allServer : allServers) {
             String name = allServer.getServerInfo().getName();
             if (name.startsWith("server")) {
@@ -68,14 +66,28 @@ public class VelocityRelatedUtils extends PlatformRelatedUtils {
     }
 
     @Override
-    public List<String> getAllServers() {
+    public Set<String> getAllServers() {
         Collection<RegisteredServer> allServers = proxyServer.getAllServers();
-        List<String> serverList = new ArrayList<>();
+        Set<String> serverList = new HashSet<>();
         for (RegisteredServer allServer : allServers) {
             String name = allServer.getServerInfo().getName();
             serverList.add(name);
         }
         return serverList;
+    }
+
+    @Override
+    public Map<UUID, String> getOnlinePlayers() {
+        HashMap<UUID, String> uuidStringHashMap = new HashMap<>();
+        for (Player player : proxyServer.getAllPlayers()) {
+            uuidStringHashMap.put(player.getUniqueId(), player.getUsername());
+        }
+        return uuidStringHashMap;
+    }
+
+    @Override
+    public Map<UUID, String> getPlayerServerMap() {
+        return null;
     }
 
 }

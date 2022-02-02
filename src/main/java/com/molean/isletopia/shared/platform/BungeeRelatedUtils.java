@@ -1,12 +1,11 @@
 package com.molean.isletopia.shared.platform;
 
 import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.api.connection.Server;
 import net.md_5.bungee.api.plugin.Plugin;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
 public class BungeeRelatedUtils extends PlatformRelatedUtils {
     private static Plugin javaPlugin = null;
@@ -33,8 +32,8 @@ public class BungeeRelatedUtils extends PlatformRelatedUtils {
 
 
     @Override
-    public List<String> getIslandServers() {
-        ArrayList<String> stringArrayList = new ArrayList<>();
+    public Set<String> getIslandServers() {
+        Set<String> stringArrayList = new HashSet<>();
         for (String s : ProxyServer.getInstance().getServers().keySet()) {
             if (s.startsWith("server")) {
                 stringArrayList.add(s);
@@ -44,8 +43,29 @@ public class BungeeRelatedUtils extends PlatformRelatedUtils {
     }
 
     @Override
-    public List<String> getAllServers() {
-        return new ArrayList<>(ProxyServer.getInstance().getServers().keySet());
+    public Set<String> getAllServers() {
+        return new HashSet<>(ProxyServer.getInstance().getServers().keySet());
+    }
+
+    @Override
+    public Map<UUID, String> getOnlinePlayers() {
+        HashMap<UUID, String> uuidStringHashMap = new HashMap<>();
+        for (ProxiedPlayer player : ProxyServer.getInstance().getPlayers()) {
+            uuidStringHashMap.put(player.getUniqueId(), player.getName());
+        }
+        return uuidStringHashMap;
+    }
+
+    @Override
+    public Map<UUID, String> getPlayerServerMap() {
+        HashMap<UUID, String> uuidStringHashMap = new HashMap<>();
+        for (ProxiedPlayer player : ProxyServer.getInstance().getPlayers()) {
+            Server server = player.getServer();
+            if (server != null) {
+                uuidStringHashMap.put(player.getUniqueId(), server.getInfo().getName());
+            }
+        }
+        return uuidStringHashMap;
     }
 
 }

@@ -1,1 +1,3 @@
 com/molean/isletopia/shared/database/MSPTDao.class
+com/molean/isletopia/shared/message/ServerInfoUpdater.class
+com/molean/isletopia/shared/utils/ChatChannelUtils.class

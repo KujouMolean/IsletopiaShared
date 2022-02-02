@@ -4,9 +4,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.sql.Timestamp;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 public class Island {
     protected final int id;
@@ -141,6 +139,18 @@ public class Island {
             }
         }
         return false;
+    }
+
+    public String getFlagData(String key) {
+        for (String islandFlag : islandFlags) {
+            String[] split = islandFlag.split("#");
+            if (split[0].equals(key)) {
+                ArrayList<String> arrayList = new ArrayList<>(List.of(split));
+                arrayList.remove(0);
+                return String.join("#", arrayList);
+            }
+        }
+        return null;
     }
 
     @Override

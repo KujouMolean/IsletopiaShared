@@ -1,11 +1,15 @@
 package com.molean.isletopia.shared.platform;
 
+import com.molean.isletopia.shared.message.ServerInfoUpdater;
 import org.bukkit.Bukkit;
+import org.bukkit.Server;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 public class BukkitRelatedUtils extends PlatformRelatedUtils {
 
@@ -15,13 +19,25 @@ public class BukkitRelatedUtils extends PlatformRelatedUtils {
     }
 
     @Override
-    public List<String> getIslandServers() {
-        return null;
+    public Set<String> getIslandServers() {
+        Set<String> servers = ServerInfoUpdater.getServers();
+        servers.removeIf(s -> !s.startsWith("server"));
+        return servers;
     }
 
     @Override
-    public List<String> getAllServers() {
-        return null;
+    public Set<String> getAllServers() {
+        return ServerInfoUpdater.getServers();
+    }
+
+    @Override
+    public Map<UUID, String> getOnlinePlayers() {
+        return ServerInfoUpdater.getOnlinePlayersMap();
+    }
+
+    @Override
+    public Map<UUID, String> getPlayerServerMap() {
+        return ServerInfoUpdater.getUUIDServerMap();
     }
 
     private static JavaPlugin javaPlugin = null;

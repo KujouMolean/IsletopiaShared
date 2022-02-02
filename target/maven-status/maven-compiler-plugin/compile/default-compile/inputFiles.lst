@@ -1,4 +1,5 @@
 /Users/molean/IdeaProjects/IsletopiaShared/src/main/java/com/molean/isletopia/shared/utils/ResourceUtils.java
+/Users/molean/IdeaProjects/IsletopiaShared/src/main/java/com/molean/isletopia/shared/utils/ChatChannelUtils.java
 /Users/molean/IdeaProjects/IsletopiaShared/src/main/java/com/molean/isletopia/shared/model/IslandId.java
 /Users/molean/IdeaProjects/IsletopiaShared/src/main/java/com/molean/isletopia/shared/pojo/resp/CommonResponseObject.java
 /Users/molean/IdeaProjects/IsletopiaShared/src/main/java/com/molean/isletopia/shared/pojo/obj/PlaySoundObject.java
@@ -34,6 +35,7 @@
 /Users/molean/IdeaProjects/IsletopiaShared/src/main/java/com/molean/isletopia/shared/pojo/obj/VisitNotificationObject.java
 /Users/molean/IdeaProjects/IsletopiaShared/src/main/java/com/molean/isletopia/shared/model/BumpInfo.java
 /Users/molean/IdeaProjects/IsletopiaShared/src/main/java/com/molean/isletopia/shared/MessageHandler.java
+/Users/molean/IdeaProjects/IsletopiaShared/src/main/java/com/molean/isletopia/shared/message/ServerInfoUpdater.java
 /Users/molean/IdeaProjects/IsletopiaShared/src/main/java/com/molean/isletopia/shared/pojo/resp/VisitResponse.java
 /Users/molean/IdeaProjects/IsletopiaShared/src/main/java/com/molean/isletopia/shared/database/UUIDDao.java
 /Users/molean/IdeaProjects/IsletopiaShared/src/main/java/com/molean/isletopia/shared/platform/VelocityRelatedUtils.java

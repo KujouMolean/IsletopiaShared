@@ -2,32 +2,33 @@ package com.molean.isletopia.shared.pojo.obj;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 public class PlayerInfoObject {
-    private List<String> players;
-    private Map<String, List<String>> playersPerServer;
+    private Map<UUID, String> players;
+    private Map<String, Map<UUID,String>> playersPerServer;
 
     public PlayerInfoObject() {
     }
 
-    public PlayerInfoObject(List<String> players, Map<String, List<String>> playersPerServer) {
+    public PlayerInfoObject( Map<UUID, String>players, Map<String, Map<UUID,String>> playersPerServer) {
         this.players = players;
         this.playersPerServer = playersPerServer;
     }
 
-    public List<String> getPlayers() {
+    public  Map<UUID, String> getPlayers() {
         return players;
     }
 
-    public void setPlayers(List<String> players) {
+    public void setPlayers( Map<UUID, String> players) {
         this.players = players;
     }
 
-    public Map<String, List<String>> getPlayersPerServer() {
+    public Map<String, Map<UUID,String>> getPlayersPerServer() {
         return playersPerServer;
     }
 
-    public void setPlayersPerServer(Map<String, List<String>> playersPerServer) {
+    public void setPlayersPerServer(Map<String, Map<UUID,String>> playersPerServer) {
         this.playersPerServer = playersPerServer;
     }
 
