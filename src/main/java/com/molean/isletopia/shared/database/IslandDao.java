@@ -12,65 +12,6 @@ import java.util.*;
 
 public class IslandDao {
 
-    public static void checkTable() throws SQLException {
-        try (Connection connection = DataSourceUtils.getConnection()) {
-            String createIslandTable = """
-                    create table if not exists island
-                       (
-                           id     int primary key auto_increment,
-                           x      int    not null,
-                           z      int    not null,
-                           spawnX double not null default 256,
-                           spawnY double not null default 256,
-                           spawnZ double not null default 128,
-                           yaw    float  not null default 0,
-                           pitch  float  not null default 0,
-                           server   varchar(100) not null,
-                           uuid     varchar(100) not null,
-                           name     text         null,
-                           biome    varchar(100) not null default 'PLAINS',
-                           creation timestamp    not null default CURRENT_TIMESTAMP,
-                           icon     varchar(100) not null default 'GRASS_BLOCK',
-                           constraint  island_pk   unique (server, x, z)
-                       );
-                    """;
-            String createMemberTable = """
-                    create table if not exists island_member
-                    (
-                        id        int primary key auto_increment,
-                        island_id int          not null,
-                        member    varchar(100) not null,
-                        uuid      varchar(100) not null,
-                        foreign key (island_id) references minecraft.island (id),
-                        constraint unique_member
-                            unique (island_id, member)
-                    );
-                    """;
-            String createFlagTable = """
-                    create table if not exists island_flag
-                    (
-                        id        int primary key auto_increment,
-                        island_id int  not null,
-                        flag      text not null,
-                        foreign key (island_id) references minecraft.island (id)
-                    );
-                    """;
-            String createVisitorTable = """
-                    create table if not exists island_visit
-                    (
-                        id        int primary key auto_increment,
-                        island_id int          not null,
-                        visitor   varchar(100) not null,
-                        time      timestamp    not null default CURRENT_TIMESTAMP,
-                        foreign key (island_id) references minecraft.island (id)
-                    );
-                    """;
-            connection.prepareStatement(createIslandTable).execute();
-            connection.prepareStatement(createMemberTable).execute();
-            connection.prepareStatement(createFlagTable).execute();
-            connection.prepareStatement(createVisitorTable).execute();
-        }
-    }
 
     public static Set<UUID> getIslandMember(int id) throws SQLException {
         Set<UUID> set = new HashSet<>();
@@ -280,6 +221,25 @@ public class IslandDao {
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
                 return resultSet.getInt(1);
+            }
+        }
+        return null;
+    }
+
+    @Nullable
+    public static LocalDateTime getPlayerFirstIslandCreation(UUID owner) throws SQLException {
+        try (Connection connection = DataSourceUtils.getConnection()) {
+            String sql = """
+                    select creation
+                    from minecraft.island
+                    where uuid=?
+                    order by creation desc;
+                    """;
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, owner.toString());
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                return resultSet.getTimestamp("creation").toLocalDateTime();
             }
         }
         return null;

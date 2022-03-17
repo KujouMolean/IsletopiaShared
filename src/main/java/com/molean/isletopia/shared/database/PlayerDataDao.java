@@ -10,20 +10,6 @@ import java.util.UUID;
 
 public class PlayerDataDao {
 
-    public static void checkTable() throws SQLException {
-        try (Connection connection = DataSourceUtils.getConnection()) {
-            String sql = """
-                    create table if not exists playerdata
-                    (
-                        id       int primary key auto_increment,
-                        data     longblob     not null,
-                        passwd   varchar(100) null default null
-                    );""";
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.execute();
-
-        }
-    }
 
     public static boolean exist(UUID owner) throws SQLException {
         try (Connection connection = DataSourceUtils.getConnection()) {

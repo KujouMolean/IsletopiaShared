@@ -27,7 +27,7 @@ public class ServerMessageUtils {
 
     public static void switchServer(String player, String server) {
         SwitchServerRequest switchServerRequest = new SwitchServerRequest(player, server);
-        sendMessage("waterfall", "SwitchServer", switchServerRequest);
+        sendMessage("proxy", "SwitchServer", switchServerRequest);
     }
 
 
@@ -37,7 +37,7 @@ public class ServerMessageUtils {
         }
         WrappedMessageObject wrappedMessageObject = new WrappedMessageObject();
         wrappedMessageObject.setMessage(new Gson().toJson(object));
-        wrappedMessageObject.setFrom("waterfall");
+        wrappedMessageObject.setFrom("proxy");
         wrappedMessageObject.setTo(target);
         wrappedMessageObject.setSubChannel(channel);
         wrappedMessageObject.setTime(System.currentTimeMillis());

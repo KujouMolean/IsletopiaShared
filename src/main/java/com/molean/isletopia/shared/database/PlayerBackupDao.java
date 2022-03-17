@@ -1,8 +1,7 @@
 package com.molean.isletopia.shared.database;
 
-import com.molean.isletopia.shared.database.DataSourceUtils;
 import com.molean.isletopia.shared.utils.Pair;
-import com.molean.isletopia.shared.utils.UUIDUtils;
+import com.molean.isletopia.shared.utils.UUIDManager;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -17,30 +16,9 @@ import java.util.List;
 import java.util.UUID;
 
 public class PlayerBackupDao {
-    public static void checkTable() {
-        try (Connection connection = DataSourceUtils.getConnection("backup")) {
-            String sql = """
-                    create table if not exists player_backup
-                    (
-                        id     int auto_increment
-                            primary key,
-                        player varchar(20) not null,
-                        data   longblob    not null,
-                        time   timestamp  null
-                    );
-                    """;
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.execute();
-
-
-        } catch (Exception exception) {
-            exception.printStackTrace();
-        }
-    }
-
 
     public static void upload(String player) {
-        UUID uuid = UUIDUtils.get(player);
+        UUID uuid = UUIDManager.get(player);
         File file = new File(String.format("SkyWorld/playerdata/%s.dat", uuid));
         if (!file.exists()) {
             try {

@@ -5,29 +5,6 @@ import com.molean.isletopia.shared.model.BumpInfo;
 import java.sql.*;
 
 public class BumpDao {
-
-
-    public static void checkTable() throws SQLException {
-        try (Connection connection = DataSourceUtils.getConnection()) {
-            String sql = """
-                create table if not exists bump
-                (
-                    id       int primary key auto_increment,
-                    username varchar(100)       not null,
-                    datetime timestamp          not null,
-                    claimed  bool default false not null,
-                    constraint uk
-                        unique (username, datetime)
-                );
-                                
-                """;
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.executeUpdate();
-
-        }
-
-    }
-
     public static boolean exist(BumpInfo bumpInfo) throws SQLException {
         try (Connection connection = DataSourceUtils.getConnection()) {
             String sql = """

@@ -42,4 +42,8 @@ public class Pair<K, V> {
         result = 31 * result + value.hashCode();
         return result;
     }
+
+    public static <L, R> Pair<L, R> of(L l, R r) {
+        return new Pair<>(l, r);
+    }
 }

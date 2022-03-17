@@ -10,22 +10,6 @@ import java.sql.SQLException;
 import java.util.*;
 
 public class PlayerStatsDao {
-    public static void checkTable() throws SQLException {
-        try (Connection connection = DataSourceUtils.getConnection()) {
-            String sql = """
-                     create table if not exists player_stats
-                    (
-                        id       int primary key auto_increment,
-                        uuid     varchar(100) not null unique,
-                        stats    longtext     not null,
-                        passwd   varchar(100) null default null
-                    );""";
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.execute();
-
-        }
-    }
-
     public static boolean exist(UUID owner) throws SQLException {
         try (Connection connection = DataSourceUtils.getConnection()) {
             String sql = """

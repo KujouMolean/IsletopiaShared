@@ -46,6 +46,8 @@
                                     <include>io.projectreactor:reactor-core</include>
                                     <include>org.reactivestreams:reactive-streams</include>
                                     <include>org.xerial:sqlite-jdbc</include>
+<!--                                    <include>com.mchange:c3p0</include>-->
+<!--                                    <include>com.mchange:mchange-commons-java</include>-->
                                 </includes>
                             </artifactSet>
                             <minimizeJar>false</minimizeJar>
@@ -123,6 +125,7 @@
 <!--            <version>1.17-R0.1-SNAPSHOT</version>-->
 <!--            <scope>provided</scope>-->
 <!--        </dependency>-->
+
         <dependency>
             <groupId>io.lettuce</groupId>
             <artifactId>lettuce-core</artifactId>
@@ -159,6 +162,16 @@
             <version>3.0.0</version>
             <scope>provided</scope>
         </dependency>
+<!--        <dependency>-->
+<!--            <groupId>com.mchange</groupId>-->
+<!--            <artifactId>c3p0</artifactId>-->
+<!--            <version>0.9.5.5</version>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>com.mchange</groupId>-->
+<!--            <artifactId>mchange-commons-java</artifactId>-->
+<!--            <version>0.2.19</version>-->
+<!--        </dependency>-->
     </dependencies>
 
 </project>

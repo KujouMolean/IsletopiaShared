@@ -4,21 +4,6 @@ import java.sql.*;
 import java.time.LocalDateTime;
 
 public class MSPTDao {
-    public static void checkTable() throws SQLException {
-        try (Connection connection = DataSourceUtils.getConnection()) {
-            String sql = """
-                    create table if not exists minecraft.mspt
-                    (
-                        id     int primary key auto_increment,
-                        server varchar(100) not null,
-                        mspt   double       not null,
-                        time   timestamp    not null
-                    );
-                    """;
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.execute();
-        }
-    }
 
     public static void addRecord(String server, double mspt) throws SQLException {
         try (Connection connection = DataSourceUtils.getConnection()) {

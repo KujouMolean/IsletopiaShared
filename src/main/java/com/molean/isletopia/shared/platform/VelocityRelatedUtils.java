@@ -4,52 +4,35 @@ import com.velocitypowered.api.plugin.PluginContainer;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
+import com.velocitypowered.api.scheduler.ScheduledTask;
 
 import java.lang.reflect.Field;
 import java.util.*;
 
 public class VelocityRelatedUtils extends PlatformRelatedUtils {
-    private static ProxyServer proxyServer;
+    public static ProxyServer proxyServer;
 
-    private static Object plugin = null;
 
     public static ProxyServer getProxyServer() {
-        if (proxyServer != null) {
-            return proxyServer;
-        }
-        Object plugin = getPlugin();
-        ProxyServer proxyServer = null;
-        try {
-            Field proxyServerField = plugin.getClass().getDeclaredField("proxyServer");
-            proxyServerField.setAccessible(true);
-            proxyServer = (ProxyServer) proxyServerField.get(plugin);
-        } catch (Exception e) {
-            throw new RuntimeException("Isletopia Plugin does not contains proxyServerField!");
-        }
-        VelocityRelatedUtils.proxyServer = proxyServer;
         return proxyServer;
     }
 
     public static Object getPlugin() {
-        if (plugin != null) {
-            return plugin;
+        Optional<PluginContainer> pluginContainer = proxyServer.getPluginManager().getPlugin("isletopia_velocity");
+        if (pluginContainer.isEmpty()) {
+            return null;
         }
-        Collection<PluginContainer> plugins = proxyServer.getPluginManager().getPlugins();
-        for (PluginContainer plugin : plugins) {
-            Optional<String> name = plugin.getDescription().getName();
-            if (name.isPresent() && name.get().startsWith("Isletopia")) {
-                if (plugin.getInstance().isPresent()) {
-                    VelocityRelatedUtils.plugin = plugin.getInstance().get();
-                    return VelocityRelatedUtils.plugin;
-                }
-            }
+        Optional<?> instance = pluginContainer.get().getInstance();
+        if (instance.isEmpty()) {
+            return null;
         }
-        throw new RuntimeException("Isletopia Plugin is not exist!");
+        return instance.get();
     }
 
     @Override
     public void runAsync(Runnable runnable) {
-        proxyServer.getScheduler().buildTask(getPlugin(), runnable);
+
+        proxyServer.getScheduler().buildTask(getPlugin(), runnable).schedule();
     }
 
     @Override
@@ -87,7 +70,14 @@ public class VelocityRelatedUtils extends PlatformRelatedUtils {
 
     @Override
     public Map<UUID, String> getPlayerServerMap() {
-        return null;
+        HashMap<UUID, String> uuidStringHashMap = new HashMap<>();
+        for (RegisteredServer registeredServer : proxyServer.getAllServers()) {
+            String name = registeredServer.getServerInfo().getName();
+            for (Player player : registeredServer.getPlayersConnected()) {
+                uuidStringHashMap.put(player.getUniqueId(), name);
+            }
+        }
+        return uuidStringHashMap;
     }
 
 }

@@ -7,26 +7,6 @@ import java.util.UUID;
 
 public class PlayTimeStatisticsDao {
 
-
-    public static void checkTable() {
-        try (Connection connection = DataSourceUtils.getConnection()) {
-            String sql = """
-                    create table if not exists playtime_statistics(
-                        id int auto_increment primary key not null ,
-                        server text not null ,
-                        startTimeStamp long not null,
-                        endTimeStamp long not null ,
-                        playtime long not null,
-                        uuid varchar(100) not null
-                    )""";
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.execute();
-
-        } catch (Exception exception) {
-            exception.printStackTrace();
-        }
-    }
-
     public static void addRecord(UUID player, String server, long start, long end) {
         try (Connection connection = DataSourceUtils.getConnection()) {
             String sql = "insert into minecraft.playtime_statistics(uuid, server, startTimeStamp, endTimeStamp, playtime) VALUES (?,?,?,?,?)";

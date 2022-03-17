@@ -4,10 +4,36 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
 public class UUIDDao {
+
+    public static Map<UUID, String> snapshot() {
+        HashMap<UUID, String> uuidStringHashMap = new HashMap<>();
+        try (Connection connection = DataSourceUtils.getConnection()) {
+            String sql = "select uuid,name from minecraft.uuid";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                String uuidString = resultSet.getString(1);
+                if (uuidString == null) {
+                    continue;
+                }
+                UUID uuid = UUID.fromString(resultSet.getString(1));
+                String name = resultSet.getString(2);
+                if (name == null) {
+                    continue;
+                }
+                uuidStringHashMap.put(uuid, name);
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return uuidStringHashMap;
+    }
 
     public static void delete(UUID uuid) {
         try (Connection connection = DataSourceUtils.getConnection()) {
