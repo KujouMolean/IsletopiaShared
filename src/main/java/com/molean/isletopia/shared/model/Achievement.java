@@ -11,11 +11,11 @@ public class Achievement {
     @Override
     public String toString() {
         return """
-                %s
-                %s
+                §f%s
+                §7%s
                                 
-                获取方式: %s
-                成就积分: %d
+                §7获取方式: %s
+                §7成就积分: %d
                 """.formatted(display, description, access, score);
     }
 

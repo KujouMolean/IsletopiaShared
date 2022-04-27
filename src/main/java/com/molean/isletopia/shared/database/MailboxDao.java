@@ -1,8 +1,6 @@
 package com.molean.isletopia.shared.database;
 
 import com.molean.isletopia.shared.model.Mail;
-import com.molean.isletopia.shared.platform.BukkitRelatedUtils;
-import com.molean.isletopia.shared.platform.PlatformRelatedUtils;
 
 import java.io.ByteArrayInputStream;
 import java.sql.Connection;
@@ -11,14 +9,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.PriorityQueue;
 import java.util.UUID;
 
 public class MailboxDao {
-    static {
-        //require bukkit api
-//        assert PlatformRelatedUtils.getInstance() instanceof BukkitRelatedUtils;
-    }
 
     public static void request(Mail mail) throws SQLException {
         UUID source = mail.getSource();
@@ -67,11 +60,11 @@ public class MailboxDao {
         ArrayList<Mail> mail = new ArrayList<>();
         try (Connection connection = DataSourceUtils.getConnection()) {
             String sql = """
-                   select id, source, target, message, data, claimed, time
-                   from minecraft.mailbox
-                   where target=?
-                   order by time
-                   """;
+                    select id, source, target, message, data, claimed, time
+                    from minecraft.mailbox
+                    where target=? and claimed=false
+                    order by time
+                    """;
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setString(1, target.toString());
 

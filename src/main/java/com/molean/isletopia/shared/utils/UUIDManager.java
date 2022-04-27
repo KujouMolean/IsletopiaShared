@@ -15,6 +15,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -23,34 +24,57 @@ public enum UUIDManager {
     INSTANCE;
 
 
-    private Map<UUID, String> snapshot = null;
+    private static Map<UUID, String> snapshot = null;
+    private static Map<String, UUID> snapshotReverse = new HashMap<>();
 
     private long lastUpdate = 0;
 
-    private static final long interval = 1000 * 60 * 15;//15 min
+    private static final long interval = 1000 * 60 * 15; //15 min
 
     private void update() {
         snapshot = UUIDDao.snapshot();
+        snapshotReverse = new HashMap<>();
+        snapshot.forEach((uuid, s) -> {
+            snapshotReverse.put(s, uuid);
+        });
     }
 
     @SuppressWarnings("all")
     UUIDManager() {
         update();
-
     }
 
     public Map<UUID, String> getSnapshot() {
         if (System.currentTimeMillis() - lastUpdate > interval) {
             lastUpdate = System.currentTimeMillis();
-            PlatformRelatedUtils.getInstance().runAsync(() -> {
-                snapshot = UUIDDao.snapshot();
-            });
+            PlatformRelatedUtils.getInstance().runAsync(this::update);
+        }
+        if (snapshot == null) {
+            update();
         }
         return snapshot;
     }
 
     @Nullable
     public static String get(UUID uuid) {
+        UUIDManager.INSTANCE.getSnapshot();
+        if (snapshot.containsKey(uuid)) {
+            return snapshot.get(uuid);
+        }
+        return getAccurate(uuid);
+    }
+
+    @Nullable
+    public static UUID get(String player) {
+        UUIDManager.INSTANCE.getSnapshot();
+        if (snapshotReverse.containsKey(player)) {
+            return snapshotReverse.get(player);
+        }
+        return getAccurate(player);
+    }
+
+    @Nullable
+    public static String getAccurate(UUID uuid) {
         //查正版
         try (Connection connection = DataSourceUtils.getConnection()) {
             String sql = "select name from minecraft.uuid where uuid=?";
@@ -63,7 +87,6 @@ public enum UUIDManager {
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
-
         return null;
     }
 
@@ -71,8 +94,9 @@ public enum UUIDManager {
         return UUID.nameUUIDFromBytes(("OfflinePlayer:" + player).getBytes(StandardCharsets.UTF_8));
     }
 
+
     @Nullable
-    public static UUID get(String player) {
+    public static UUID getAccurate(String player) {
         if (player.startsWith("#")) {
             return UUID.nameUUIDFromBytes(("OfflinePlayer:" + player).getBytes(StandardCharsets.UTF_8));
         } else {

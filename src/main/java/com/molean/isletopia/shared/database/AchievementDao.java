@@ -7,6 +7,7 @@ import com.molean.isletopia.shared.model.PlayerAchievement;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
@@ -23,6 +24,35 @@ public class AchievementDao {
             preparedStatement.setString(6, achievement.getIcon());
             preparedStatement.executeUpdate();
         }
+    }
+
+    public static void updateAchievement(Achievement achievement) throws SQLException {
+        try (Connection connection = DataSourceUtils.getConnection()) {
+            String sql = "update minecraft.achievement set display=?,description=?,access=?,score=?,icon=? where name=?";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(6, achievement.getName());
+            preparedStatement.setString(1, achievement.getDisplay());
+            preparedStatement.setString(2, achievement.getDescription());
+            preparedStatement.setString(3, achievement.getAccess());
+            preparedStatement.setInt(4, achievement.getScore());
+            preparedStatement.setString(5, achievement.getIcon());
+            preparedStatement.executeUpdate();
+        }
+    }
+
+    public static Collection<String> getAchievements() throws SQLException {
+        ArrayList<String> strings = new ArrayList<>();
+
+        try (Connection connection = DataSourceUtils.getConnection()) {
+            String sql = "select name from minecraft.achievement";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                String name = resultSet.getString("name");
+                strings.add(name);
+            }
+        }
+        return strings;
     }
 
     public static Achievement getAchievement(String name) throws SQLException {
@@ -85,7 +115,7 @@ public class AchievementDao {
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setString(1, owner.toString());
             ResultSet resultSet = preparedStatement.executeQuery();
-            if (resultSet.next()) {
+            while (resultSet.next()) {
                 PlayerAchievement playerAchievement = new PlayerAchievement();
                 playerAchievement.setAchievement(resultSet.getString("achievement"));
                 playerAchievement.setOwner(UUID.fromString(resultSet.getString("uuid")));

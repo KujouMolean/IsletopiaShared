@@ -20,7 +20,6 @@ public class Island {
     @NotNull
     protected UUID uuid;
     protected String name;
-    protected String biome;
     @NotNull
     protected Timestamp creation;
     protected HashSet<UUID> members;
@@ -41,14 +40,13 @@ public class Island {
         this.pitch = island.pitch;
         this.name = island.name;
         this.uuid = island.uuid;
-        this.biome = island.biome;
         this.creation = island.creation;
         this.members = new HashSet<>(island.members);
         this.islandFlags = new HashSet<>(island.islandFlags);
         this.icon = island.icon;
     }
 
-    public Island(int id, int x, int z, double spawnX, double spawnY, double spawnZ, float yaw, float pitch, @NotNull String server, @NotNull UUID uuid, @Nullable String name, @Nullable String biome, @NotNull Timestamp creation, Set<UUID> members, Set<String> islandFlags, String icon) {
+    public Island(int id, int x, int z, double spawnX, double spawnY, double spawnZ, float yaw, float pitch, @NotNull String server, @NotNull UUID uuid, @Nullable String name, @NotNull Timestamp creation, Set<UUID> members, Set<String> islandFlags, String icon) {
         this.id = id;
         this.x = x;
         this.z = z;
@@ -60,7 +58,6 @@ public class Island {
         this.pitch = pitch;
         this.name = name;
         this.uuid = uuid;
-        this.biome = biome;
         this.creation = creation;
         this.members = new HashSet<>(members);
         this.islandFlags = new HashSet<>(islandFlags);
@@ -113,10 +110,6 @@ public class Island {
 
     public String getName() {
         return name;
-    }
-
-    public String getBiome() {
-        return biome;
     }
 
     public @NotNull Timestamp getCreation() {

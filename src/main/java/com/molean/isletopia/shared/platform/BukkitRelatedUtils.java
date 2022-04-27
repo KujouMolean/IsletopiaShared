@@ -2,7 +2,6 @@ package com.molean.isletopia.shared.platform;
 
 import com.molean.isletopia.shared.message.ServerInfoUpdater;
 import org.bukkit.Bukkit;
-import org.bukkit.Server;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
@@ -10,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.logging.Logger;
 
 public class BukkitRelatedUtils extends PlatformRelatedUtils {
 
@@ -31,6 +31,11 @@ public class BukkitRelatedUtils extends PlatformRelatedUtils {
     }
 
     @Override
+    public Logger getLogger() {
+        return getPlugin().getLogger();
+    }
+
+    @Override
     public Map<UUID, String> getOnlinePlayers() {
         return ServerInfoUpdater.getOnlinePlayersMap();
     }
@@ -38,6 +43,11 @@ public class BukkitRelatedUtils extends PlatformRelatedUtils {
     @Override
     public Map<UUID, String> getPlayerServerMap() {
         return ServerInfoUpdater.getUUIDServerMap();
+    }
+
+
+    public boolean isMainThread() {
+        return Bukkit.isPrimaryThread();
     }
 
     private static JavaPlugin javaPlugin = null;

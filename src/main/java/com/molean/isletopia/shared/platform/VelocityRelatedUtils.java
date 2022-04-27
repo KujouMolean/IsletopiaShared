@@ -8,6 +8,7 @@ import com.velocitypowered.api.scheduler.ScheduledTask;
 
 import java.lang.reflect.Field;
 import java.util.*;
+import java.util.logging.Logger;
 
 public class VelocityRelatedUtils extends PlatformRelatedUtils {
     public static ProxyServer proxyServer;
@@ -57,6 +58,11 @@ public class VelocityRelatedUtils extends PlatformRelatedUtils {
             serverList.add(name);
         }
         return serverList;
+    }
+
+    @Override
+    public Logger getLogger() {
+        return Logger.getAnonymousLogger();
     }
 
     @Override

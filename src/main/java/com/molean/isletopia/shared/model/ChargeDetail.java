@@ -2,7 +2,6 @@ package com.molean.isletopia.shared.model;
 
 import java.time.LocalDateTime;
 
-//pojo 记录岛屿详细的数据
 public class ChargeDetail {
     private long dispenser = 0;
     private long redstone = 0;

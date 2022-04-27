@@ -15,7 +15,7 @@ public class IslandDao {
 
     public static Set<UUID> getIslandMember(int id) throws SQLException {
         Set<UUID> set = new HashSet<>();
-        try (Connection connection = DataSourceUtils.getConnection()) {
+        try (Connection connection = DataSourceUtils.getConnectionWithoutCheck()) {
             String sql = """
                     select uuid
                     from minecraft.island_member
@@ -62,7 +62,7 @@ public class IslandDao {
 
     public static Set<String> getIslandFlag(int id) throws SQLException {
         HashSet<String> strings = new HashSet<>();
-        try (Connection connection = DataSourceUtils.getConnection()) {
+        try (Connection connection = DataSourceUtils.getConnectionWithoutCheck()) {
             String sql = """
                     select flag
                     from minecraft.island_flag
@@ -110,8 +110,8 @@ public class IslandDao {
     public static void createIsland(Island island) throws SQLException {
         try (Connection connection = DataSourceUtils.getConnection()) {
             String sql = """
-                    insert into minecraft.island(x, z, spawnX, spawnY, spawnZ,yaw,pitch, server,uuid, biome, creation,icon)
-                                           values (?, ?, ?, ?, ?, ?,?,?, ?,?, ?,?)
+                    insert into minecraft.island(x, z, spawnX, spawnY, spawnZ,yaw,pitch, server,uuid, creation,icon)
+                                           values (?, ?, ?, ?, ?, ?,?,?, ?, ?,?)
                     """;
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setInt(1, island.getX());
@@ -124,9 +124,8 @@ public class IslandDao {
             preparedStatement.setFloat(7, island.getPitch());
             preparedStatement.setString(8, island.getServer());
             preparedStatement.setString(9, island.getUuid().toString());
-            preparedStatement.setString(10, island.getBiome());
-            preparedStatement.setTimestamp(11, island.getCreation());
-            preparedStatement.setString(12, island.getIcon());
+            preparedStatement.setTimestamp(10, island.getCreation());
+            preparedStatement.setString(11, island.getIcon());
             preparedStatement.execute();
             Set<UUID> members = island.getMembers();
             Set<String> islandFlags = island.getIslandFlags();
@@ -156,7 +155,6 @@ public class IslandDao {
                         yaw=?,
                         pitch=?,
                         uuid=?,
-                        biome=?,
                         name=?,
                         creation=?,
                         icon=?
@@ -169,11 +167,10 @@ public class IslandDao {
             preparedStatement.setFloat(4, island.getYaw());
             preparedStatement.setFloat(5, island.getPitch());
             preparedStatement.setString(6, island.getUuid().toString());
-            preparedStatement.setString(7, island.getBiome());
-            preparedStatement.setString(8, island.getName());
-            preparedStatement.setTimestamp(9, island.getCreation());
-            preparedStatement.setString(10, island.getIcon());
-            preparedStatement.setInt(11, island.getId());
+            preparedStatement.setString(7, island.getName());
+            preparedStatement.setTimestamp(8, island.getCreation());
+            preparedStatement.setString(9, island.getIcon());
+            preparedStatement.setInt(10, island.getId());
             preparedStatement.execute();
         }
 
@@ -233,7 +230,7 @@ public class IslandDao {
                     select creation
                     from minecraft.island
                     where uuid=?
-                    order by creation desc;
+                    order by creation;
                     """;
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setString(1, owner.toString());
@@ -281,13 +278,12 @@ public class IslandDao {
                 uuid = UUID.fromString(uuidString);
             }
             String name = resultSet.getString("name");
-            String biome = resultSet.getString("biome");
             Timestamp creation = resultSet.getTimestamp("creation");
             String icon = resultSet.getString("icon");
             Set<UUID> islandMember = getIslandMember(id);
             Set<String> islandFlag = getIslandFlag(id);
             assert uuid != null;
-            Island island = new Island(id, x, z, spawnX, spawnY, spawnZ, yaw, pitch, server, uuid, name, biome, creation, islandMember, islandFlag, icon);
+            Island island = new Island(id, x, z, spawnX, spawnY, spawnZ, yaw, pitch, server, uuid, name, creation, islandMember, islandFlag, icon);
             islands.add(island);
         }
         return islands;
@@ -313,7 +309,7 @@ public class IslandDao {
 
     @Nullable
     public static Island getIslandByIslandId(IslandId islandId) throws SQLException {
-        try (Connection connection = DataSourceUtils.getConnection()) {
+        try (Connection connection = DataSourceUtils.getConnectionWithoutCheck()) {
             String sql = "select * from minecraft.island where x = ? and z = ? and server = ?";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setInt(1, islandId.getX());
