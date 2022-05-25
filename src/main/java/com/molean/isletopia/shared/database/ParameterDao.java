@@ -8,7 +8,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ParameterDao {
 
@@ -146,5 +148,28 @@ public class ParameterDao {
             throwables.printStackTrace();
         }
         return strings;
+    }
+
+    public static Map<String,String> map(String type, String target) {
+        Map<String, String> map = new HashMap<>();
+        try (Connection connection = DataSourceUtils.getConnection()) {
+            String sql = """
+                       select p_key,p_value
+                       from minecraft.parameter
+                       where type = ? and target= ?
+                    """;
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, type);
+            preparedStatement.setString(2, target);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                String k = resultSet.getString(1);
+                String v = resultSet.getString(2);
+                map.put(k, v);
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return map;
     }
 }

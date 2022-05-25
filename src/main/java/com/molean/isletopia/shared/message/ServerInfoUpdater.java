@@ -1,12 +1,16 @@
 package com.molean.isletopia.shared.message;
 
+import com.google.inject.Singleton;
 import com.molean.isletopia.shared.MessageHandler;
+import com.molean.isletopia.shared.annotations.MessageHandlerType;
 import com.molean.isletopia.shared.pojo.WrappedMessageObject;
 import com.molean.isletopia.shared.pojo.obj.PlayerInfoObject;
 
 import java.io.File;
 import java.util.*;
 
+
+@MessageHandlerType(PlayerInfoObject.class)
 public class ServerInfoUpdater implements MessageHandler<PlayerInfoObject> {
 
 
@@ -43,14 +47,12 @@ public class ServerInfoUpdater implements MessageHandler<PlayerInfoObject> {
     public static Map<String, String> getPlayerServerMap() {
         return playerServerMap;
     }
+
     public static Map<UUID, String> getUUIDServerMap() {
         return uuidServerMap;
     }
 
 
-    public ServerInfoUpdater() {
-        RedisMessageListener.setHandler("PlayerInfo", this, PlayerInfoObject.class);
-    }
 
     @Override
     public void handle(WrappedMessageObject wrappedMessageObject, PlayerInfoObject message) {

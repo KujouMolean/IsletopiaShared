@@ -58,17 +58,7 @@ public class UUIDDao {
     }
 
 
-    public static void update(UUID uuid, String name) {
-        if (!Objects.equals(query(uuid), name)) {
-            if (query(name) != null) {
-                delete(name);
-            }
-            delete(uuid);
-            insert(uuid, name);
-        }
-    }
-
-    public static UUID query(String username) {
+    public static UUID get(String username) {
         try (Connection connection = DataSourceUtils.getConnection()) {
             String sql = "select uuid from minecraft.uuid where name=?";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
@@ -84,7 +74,7 @@ public class UUIDDao {
         return null;
     }
 
-    public static String query(UUID uuid) {
+    public static String get(UUID uuid) {
         try (Connection connection = DataSourceUtils.getConnection()) {
             String sql = "select * from minecraft.uuid where uuid=?";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
@@ -100,22 +90,20 @@ public class UUIDDao {
         return null;
     }
 
-    public static void insert(UUID uuid, String username) {
-
-        UUID query = query(username);
-        if (query != null) {
-            delete(query);
-
-        }
-
+    public static void put(UUID uuid, String username) {
         try (Connection connection = DataSourceUtils.getConnection()) {
-            String sql = "insert into minecraft.uuid(name, uuid) values(?,?)";
+            String sql = """
+                    insert into minecraft.uuid (name,uuid) values(?,?) on duplicate key update name=?,uuid=?
+                    """;
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setString(1, username);
             preparedStatement.setString(2, uuid.toString());
+            preparedStatement.setString(3, username);
+            preparedStatement.setString(4, uuid.toString());
             preparedStatement.execute();
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
     }
+
 }

@@ -6,6 +6,7 @@ import com.google.gson.JsonParser;
 import com.molean.isletopia.shared.database.DataSourceUtils;
 import com.molean.isletopia.shared.database.UUIDDao;
 import com.molean.isletopia.shared.platform.PlatformRelatedUtils;
+import com.molean.isletopia.shared.service.RedisService;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.InputStream;
@@ -34,15 +35,15 @@ public enum UUIDManager {
     private void update() {
         snapshot = UUIDDao.snapshot();
         snapshotReverse = new HashMap<>();
-        snapshot.forEach((uuid, s) -> {
-            snapshotReverse.put(s, uuid);
-        });
+        snapshot.forEach((uuid, s) -> snapshotReverse.put(s, uuid));
     }
 
     @SuppressWarnings("all")
     UUIDManager() {
         update();
     }
+
+    private RedisService redisService;
 
     public Map<UUID, String> getSnapshot() {
         if (System.currentTimeMillis() - lastUpdate > interval) {
@@ -53,6 +54,29 @@ public enum UUIDManager {
             update();
         }
         return snapshot;
+    }
+
+    public void cache(UUID uuid, String name) {
+        redisService.getCommand().set("UUIDMapping:" + uuid, name);
+        redisService.getCommand().set("UUIDReverseMapping:" + name, uuid.toString());
+    }
+
+    @Nullable
+    public String getFromCache(UUID uuid) {
+        if (redisService.getCommand().exists("UUIDMapping:" + uuid) < 1) {
+            return null;
+        }
+        return redisService.getCommand().get("UUIDMapping:" + uuid);
+
+    }
+
+    @Nullable
+    public UUID getFromCache(String name) {
+        if (redisService.getCommand().exists("UUIDReverseMapping:" + name) < 1) {
+            return null;
+        }
+        return UUID.fromString(redisService.getCommand().get("UUIDReverseMapping:" + name));
+
     }
 
     @Nullable

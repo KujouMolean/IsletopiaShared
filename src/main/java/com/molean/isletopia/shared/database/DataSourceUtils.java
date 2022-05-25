@@ -19,13 +19,10 @@ public class DataSourceUtils {
     private static final Map<String, MysqlConnectionPoolDataSource> dataSourceMap = new HashMap<>();
 
     public static Connection getConnection() {
-        return getConnection("minecraft", true);
+        return getConnection("minecraft");
     }
 
-    public static Connection getConnectionWithoutCheck() {
-        return getConnection("minecraft", false);
-    }
-    public static Connection getConnection(String server, boolean check) {
+    public static Connection getConnection(String server) {
 
         if (!dataSourceMap.containsKey(server)) {
             MysqlConnectionPoolDataSource dataSource = new MysqlConnectionPoolDataSource();
@@ -53,17 +50,17 @@ public class DataSourceUtils {
             dataSourceMap.put(server, dataSource);
         }
 
-//        if (check && PlatformRelatedUtils.getInstance() instanceof BukkitRelatedUtils instance) {
-//
-//            if (instance.isMainThread()) {
-//                try {
-//                    throw new RuntimeException("Get mysql connect in main thread");
-//                } catch (RuntimeException e) {
-//                    e.printStackTrace();
-//                }
-//
-//            }
-//        }
+        if (PlatformRelatedUtils.getInstance() instanceof BukkitRelatedUtils instance) {
+
+            if (instance.isMainThread()) {
+                try {
+                    throw new RuntimeException("Get mysql connect in main thread");
+                } catch (RuntimeException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }
 
         Connection connection = null;
         try {

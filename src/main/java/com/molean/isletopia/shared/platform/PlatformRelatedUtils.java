@@ -4,6 +4,8 @@ import java.io.File;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import java.util.logging.Logger;
 
 public abstract class PlatformRelatedUtils {
@@ -27,15 +29,19 @@ public abstract class PlatformRelatedUtils {
 
     public abstract Map<UUID, String> getPlayerServerMap();
 
+    public abstract Class<?> loadClass(String path) throws Exception;
+
+    public abstract JarFile getJarFile() throws Exception;
 
     private static PlatformRelatedUtils instance;
 
     public static PlatformRelatedUtils getInstance() {
         if (instance == null) {
-            if (getServerName().equalsIgnoreCase("proxy")) {
-                instance = new VelocityRelatedUtils();
-            } else {
+            try {
+                Class.forName("org.bukkit.plugin.Plugin");
                 instance = new BukkitRelatedUtils();
+            } catch (ClassNotFoundException e) {
+                instance = new VelocityRelatedUtils();
             }
         }
         return instance;

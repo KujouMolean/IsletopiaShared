@@ -15,7 +15,7 @@ public class IslandDao {
 
     public static Set<UUID> getIslandMember(int id) throws SQLException {
         Set<UUID> set = new HashSet<>();
-        try (Connection connection = DataSourceUtils.getConnectionWithoutCheck()) {
+        try (Connection connection = DataSourceUtils.getConnection()) {
             String sql = """
                     select uuid
                     from minecraft.island_member
@@ -62,7 +62,7 @@ public class IslandDao {
 
     public static Set<String> getIslandFlag(int id) throws SQLException {
         HashSet<String> strings = new HashSet<>();
-        try (Connection connection = DataSourceUtils.getConnectionWithoutCheck()) {
+        try (Connection connection = DataSourceUtils.getConnection()) {
             String sql = """
                     select flag
                     from minecraft.island_flag
@@ -266,6 +266,7 @@ public class IslandDao {
             int id = resultSet.getInt("id");
             int x = resultSet.getInt("x");
             int z = resultSet.getInt("z");
+            String spawnWorld = resultSet.getString("spawnWorld");
             double spawnX = resultSet.getDouble("spawnX");
             double spawnY = resultSet.getDouble("spawnY");
             double spawnZ = resultSet.getDouble("spawnZ");
@@ -283,7 +284,7 @@ public class IslandDao {
             Set<UUID> islandMember = getIslandMember(id);
             Set<String> islandFlag = getIslandFlag(id);
             assert uuid != null;
-            Island island = new Island(id, x, z, spawnX, spawnY, spawnZ, yaw, pitch, server, uuid, name, creation, islandMember, islandFlag, icon);
+            Island island = new Island(id, x, z, spawnWorld, spawnX, spawnY, spawnZ, yaw, pitch, server, uuid, name, creation, islandMember, islandFlag, icon);
             islands.add(island);
         }
         return islands;
@@ -309,7 +310,7 @@ public class IslandDao {
 
     @Nullable
     public static Island getIslandByIslandId(IslandId islandId) throws SQLException {
-        try (Connection connection = DataSourceUtils.getConnectionWithoutCheck()) {
+        try (Connection connection = DataSourceUtils.getConnection()) {
             String sql = "select * from minecraft.island where x = ? and z = ? and server = ?";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setInt(1, islandId.getX());

@@ -1,5 +1,6 @@
 package com.molean.isletopia.shared.service;
 
+import com.molean.isletopia.shared.annotations.Bean;
 import com.molean.isletopia.shared.database.AccountDao;
 import com.molean.isletopia.shared.model.Account;
 
@@ -10,8 +11,9 @@ import java.sql.SQLException;
 import java.util.Locale;
 import java.util.Random;
 
+@Bean
 public class AccountService {
-    public static boolean register(String playerName, String address, String rawPassword) {
+    public boolean register(String playerName, String address, String rawPassword) {
         try {
             Account tAccount = AccountDao.getAccount(playerName.toLowerCase(Locale.ROOT));
             if (tAccount != null) {
@@ -33,7 +35,7 @@ public class AccountService {
         }
     }
 
-    public static boolean login(String playerName, String rawPassword) {
+    public boolean login(String playerName, String rawPassword) {
         try {
             Account account = AccountDao.getAccount(playerName.toLowerCase(Locale.ROOT));
             if (account == null) {
@@ -47,7 +49,7 @@ public class AccountService {
         return false;
     }
 
-    public static boolean changePassword(String playerName, String rawPassword) {
+    public boolean changePassword(String playerName, String rawPassword) {
         try {
             Account account = AccountDao.getAccount(playerName.toLowerCase(Locale.ROOT));
             if (account == null) {
@@ -62,13 +64,13 @@ public class AccountService {
         return false;
     }
 
-    public static boolean comparePassword(String rawPassword, String encryptPassword) {
+    public boolean comparePassword(String rawPassword, String encryptPassword) {
         String[] split = encryptPassword.split("\\$");
         String salt = split[2];
         return getSaltedSha256(rawPassword, salt).equals(encryptPassword);
     }
 
-    public static String sha256(String message) {
+    public String sha256(String message) {
         String hash;
         try {
             MessageDigest algorithm = MessageDigest.getInstance("SHA-256");
@@ -83,7 +85,7 @@ public class AccountService {
         return hash;
     }
 
-    public static String getSaltedSha256(String password, String salt) {
+    public String getSaltedSha256(String password, String salt) {
         return "$SHA$" + salt + "$" + sha256(sha256(password) + salt);
     }
 }

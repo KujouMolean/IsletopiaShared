@@ -96,7 +96,7 @@ public class ChargeDao {
 
     public static ChargeDetail get(int island_id) throws SQLException {
         ChargeDetail chargeDetail = new ChargeDetail();
-        try (Connection connection = DataSourceUtils.getConnectionWithoutCheck()) {
+        try (Connection connection = DataSourceUtils.getConnection()) {
             String sql = """
                     select dispenser,
                            redstone,

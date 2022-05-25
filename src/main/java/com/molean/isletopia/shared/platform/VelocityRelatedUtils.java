@@ -4,14 +4,17 @@ import com.velocitypowered.api.plugin.PluginContainer;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
-import com.velocitypowered.api.scheduler.ScheduledTask;
 
-import java.lang.reflect.Field;
+import java.io.File;
+import java.lang.reflect.Method;
+import java.net.URLClassLoader;
 import java.util.*;
+import java.util.jar.JarFile;
 import java.util.logging.Logger;
 
 public class VelocityRelatedUtils extends PlatformRelatedUtils {
     public static ProxyServer proxyServer;
+    public static Logger logger;
 
 
     public static ProxyServer getProxyServer() {
@@ -21,11 +24,11 @@ public class VelocityRelatedUtils extends PlatformRelatedUtils {
     public static Object getPlugin() {
         Optional<PluginContainer> pluginContainer = proxyServer.getPluginManager().getPlugin("isletopia_velocity");
         if (pluginContainer.isEmpty()) {
-            return null;
+            throw new RuntimeException();
         }
         Optional<?> instance = pluginContainer.get().getInstance();
         if (instance.isEmpty()) {
-            return null;
+            throw new RuntimeException();
         }
         return instance.get();
     }
@@ -62,7 +65,7 @@ public class VelocityRelatedUtils extends PlatformRelatedUtils {
 
     @Override
     public Logger getLogger() {
-        return Logger.getAnonymousLogger();
+        return logger;
     }
 
     @Override
@@ -84,6 +87,29 @@ public class VelocityRelatedUtils extends PlatformRelatedUtils {
             }
         }
         return uuidStringHashMap;
+    }
+
+    private Method findClassMethodCache = null;
+
+    @Override
+    public Class<?> loadClass(String path) throws Exception {
+        return  getClassLoader().loadClass(path);
+    }
+
+    private static ClassLoader classLoader;
+
+    public ClassLoader getClassLoader() {
+        if (classLoader == null) {
+            classLoader = getPlugin().getClass().getClassLoader();
+        }
+        return classLoader;
+    }
+
+    @Override
+    public JarFile getJarFile() throws Exception {
+        String path = new File(VelocityRelatedUtils.class.getProtectionDomain().getCodeSource().getLocation()
+                .toURI()).getPath();
+        return new JarFile(path);
     }
 
 }

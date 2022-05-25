@@ -12,6 +12,7 @@ public class Island {
     protected final int z;
     @NotNull
     protected final String server;
+    protected String spawnWorld;
     protected double spawnX;
     protected double spawnY;
     protected double spawnZ;
@@ -33,6 +34,7 @@ public class Island {
         this.x = island.x;
         this.z = island.z;
         this.server = island.server;
+        this.spawnWorld = island.spawnWorld;
         this.spawnX = island.spawnX;
         this.spawnY = island.spawnY;
         this.spawnZ = island.spawnZ;
@@ -46,11 +48,12 @@ public class Island {
         this.icon = island.icon;
     }
 
-    public Island(int id, int x, int z, double spawnX, double spawnY, double spawnZ, float yaw, float pitch, @NotNull String server, @NotNull UUID uuid, @Nullable String name, @NotNull Timestamp creation, Set<UUID> members, Set<String> islandFlags, String icon) {
+    public Island(int id, int x, int z, String spawnWorld, double spawnX, double spawnY, double spawnZ, float yaw, float pitch, @NotNull String server, @NotNull UUID uuid, @Nullable String name, @NotNull Timestamp creation, Set<UUID> members, Set<String> islandFlags, String icon) {
         this.id = id;
         this.x = x;
         this.z = z;
         this.server = server;
+        this.spawnWorld = spawnWorld;
         this.spawnX = spawnX;
         this.spawnY = spawnY;
         this.spawnZ = spawnZ;
@@ -82,6 +85,10 @@ public class Island {
 
     public IslandId getIslandId() {
         return new IslandId(server, x, z);
+    }
+
+    public String getSpawnWorld() {
+        return spawnWorld;
     }
 
     public double getSpawnX() {

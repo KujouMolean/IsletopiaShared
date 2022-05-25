@@ -62,7 +62,7 @@ public class CloudInventoryDao {
         }
     }
 
-    public static void create(UUID uuid, String material) throws SQLException {
+    public static boolean create(UUID uuid, String material) throws SQLException {
         try (Connection connection = DataSourceUtils.getConnection()) {
             String sql = """
                     insert into minecraft.cloud_inventory(uuid, material, amount) values(?,?,0)
@@ -70,7 +70,19 @@ public class CloudInventoryDao {
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setString(1, uuid.toString());
             preparedStatement.setString(2, material);
-            preparedStatement.executeUpdate();
+            return preparedStatement.executeUpdate() >0;
+        }
+    }
+
+    public static boolean delete(UUID uuid, String material) throws SQLException {
+        try (Connection connection = DataSourceUtils.getConnection()) {
+            String sql = """
+                    delete from minecraft.cloud_inventory where uuid=? and material=? and amount=0
+                    """;
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, uuid.toString());
+            preparedStatement.setString(2, material);
+            return preparedStatement.executeUpdate()>0;
         }
     }
 

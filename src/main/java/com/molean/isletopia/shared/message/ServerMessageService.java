@@ -1,54 +1,56 @@
 package com.molean.isletopia.shared.message;
 
 import com.google.gson.Gson;
+import com.molean.isletopia.shared.annotations.AutoInject;
+import com.molean.isletopia.shared.annotations.Bean;
 import com.molean.isletopia.shared.platform.PlatformRelatedUtils;
 import com.molean.isletopia.shared.pojo.WrappedMessageObject;
 import com.molean.isletopia.shared.pojo.req.SwitchServerRequest;
-import com.molean.isletopia.shared.utils.RedisUtils;
+import com.molean.isletopia.shared.service.RedisService;
 
 import java.util.logging.Logger;
 
-public class ServerMessageUtils {
+@Bean
+public class ServerMessageService {
 
+    @AutoInject
+    private RedisService redisService;
 
-    public static void sendMessage(String target, String channel, Object object) {
+    public  void sendMessage(String target, Object object) {
         Logger.getLogger("").info("向 " + target + " 发送消息: " + new Gson().toJson(object));
         WrappedMessageObject wrappedMessageObject = new WrappedMessageObject();
         wrappedMessageObject.setMessage(new Gson().toJson(object));
         wrappedMessageObject.setFrom(PlatformRelatedUtils.getServerName());
         wrappedMessageObject.setTo(target);
-        wrappedMessageObject.setSubChannel(channel);
+        wrappedMessageObject.setSubChannel(object.getClass().getName());
         wrappedMessageObject.setTime(System.currentTimeMillis());
         PlatformRelatedUtils.getInstance().runAsync(() -> {
-            RedisUtils.getCommand().publish("ServerMessage", new Gson().toJson(wrappedMessageObject));
+            redisService.getCommand().publish("ServerMessage", new Gson().toJson(wrappedMessageObject));
         });
 
     }
 
-    public static void switchServer(String player, String server) {
+    public  void switchServer(String player, String server) {
         SwitchServerRequest switchServerRequest = new SwitchServerRequest(player, server);
-        sendMessage("proxy", "SwitchServer", switchServerRequest);
+        sendMessage("proxy", switchServerRequest);
     }
 
 
-    public static void sendServerBungeeMessage(String target, String channel, Object object) {
-        if (!channel.equalsIgnoreCase("PlayerInfo")) {
-            Logger.getLogger("").info("发送 Bukkit 消息: " + object);
-        }
+    public  void sendServerBungeeMessage(String target, Object object) {
         WrappedMessageObject wrappedMessageObject = new WrappedMessageObject();
         wrappedMessageObject.setMessage(new Gson().toJson(object));
         wrappedMessageObject.setFrom("proxy");
         wrappedMessageObject.setTo(target);
-        wrappedMessageObject.setSubChannel(channel);
+        wrappedMessageObject.setSubChannel(object.getClass().getName());
         wrappedMessageObject.setTime(System.currentTimeMillis());
         PlatformRelatedUtils.getInstance().runAsync(() -> {
-            RedisUtils.getCommand().publish("ServerMessage", new Gson().toJson(wrappedMessageObject));
+            redisService.getCommand().publish("ServerMessage", new Gson().toJson(wrappedMessageObject));
         });
     }
 
-    public static void broadcastBungeeMessage(String channel, Object object) {
+    public  void broadcastBungeeMessage(Object object) {
         for (String server : PlatformRelatedUtils.getInstance().getAllServers()) {
-            sendServerBungeeMessage(server, channel, object);
+            sendServerBungeeMessage(server, object);
         }
     }
 }
